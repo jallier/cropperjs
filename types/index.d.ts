@@ -144,6 +144,7 @@ declare namespace Cropper {
     minCropBoxWidth?: number;
     modal?: boolean;
     movable?: boolean;
+    numberOfVerticalGuides?: number;
     preview?: HTMLElement | HTMLElement[] | NodeListOf<HTMLElement> | string;
     responsive?: boolean;
     restore?: boolean;
@@ -192,6 +193,7 @@ declare class Cropper {
   setCropBoxData(data: Cropper.SetCropBoxDataOptions): Cropper;
   setData(data: Cropper.SetDataOptions): Cropper;
   setDragMode(dragMode: Cropper.DragMode): Cropper;
+  setNumberOfVerticalGuides(numberOfVerticalGuides: number): Cropper;
   zoom(ratio: number): Cropper;
   zoomTo(ratio: number, pivot?: { x: number; y: number }): Cropper;
   static noConflict(): Cropper;

@@ -7,7 +7,6 @@ export default (
     + '<div class="cropper-crop-box">'
       + '<span class="cropper-view-box"></span>'
       + '<span class="cropper-dashed dashed-h"></span>'
-      + '<span class="cropper-dashed dashed-v"></span>'
       + '<span class="cropper-center"></span>'
       + '<span class="cropper-face"></span>'
       + '<span class="cropper-line line-e" data-cropper-action="e"></span>'

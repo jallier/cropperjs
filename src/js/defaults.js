@@ -41,6 +41,9 @@ export default {
   // Show the dashed lines for guiding
   guides: true,
 
+  // The number of vertical dashed lines to show
+  numberOfVerticalGuides: 2,
+
   // Show the center indicator for guiding
   center: true,
 

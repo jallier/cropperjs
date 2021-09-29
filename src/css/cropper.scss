@@ -74,11 +74,8 @@ $cropper-image-path: '../images' !default;
 
     &.dashed-v {
       border-left-width: 1px;
-      border-right-width: 1px;
       height: 100%;
-      left: calc(100% / 3);
       top: 0;
-      width: calc(100% / 3);
     }
   }
 

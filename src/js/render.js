@@ -1,4 +1,5 @@
 import {
+  NAMESPACE,
   ACTION_ALL,
   ACTION_MOVE,
   CLASS_HIDDEN,
@@ -441,6 +442,42 @@ export default {
     }
   },
 
+  renderVerticalGuides() {
+    const {
+      options, container, cropBox, face,
+    } = this;
+    let { numberOfVerticalGuides } = options;
+    const verticalGuides = container.querySelectorAll(
+      `.${NAMESPACE}-dashed.dashed-v`,
+    );
+    // Clear existing so new elements are added correctly if the number changes
+    verticalGuides.forEach((element) => {
+      element.remove();
+    });
+    /*
+     * easier to think in terms of segments, but the input is in number of lines
+     * Add one to make the input match how the logic works
+     */
+    numberOfVerticalGuides += 1;
+    if (numberOfVerticalGuides >= 2) {
+      // Add a span for each line required. Set the left and width styles manually
+      // since they are dynamic
+      const totalSize = `${100 / numberOfVerticalGuides}%`;
+      let previousElement = face;
+      for (let i = 1; i <= numberOfVerticalGuides; i += 1) {
+        const newGuide = document.createElement('span');
+        newGuide.className = `${NAMESPACE}-dashed dashed-v`;
+
+        const size = (100 / numberOfVerticalGuides) * (i - 1);
+        newGuide.style.left = `${size}%`;
+        newGuide.style.width = totalSize;
+
+        cropBox.insertBefore(newGuide, previousElement);
+        previousElement = newGuide;
+      }
+    }
+  },
+
   renderCropBox() {
     const { options, containerData, cropBoxData } = this;
 
@@ -492,6 +529,10 @@ export default {
 
     if (this.cropped && this.limited) {
       this.limitCanvas(true, true);
+    }
+
+    if (options.guides) {
+      this.renderVerticalGuides();
     }
 
     if (!this.disabled) {

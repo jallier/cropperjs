@@ -803,6 +803,33 @@ export default {
   },
 
   /**
+   * Change the number of vertical guide lines
+   * @param {number} numberOfVerticalGuides - The new number of guides to show
+   * @returns {Cropper} this
+   */
+  setNumberOfVerticalGuides(numberOfVerticalGuides) {
+    const { options } = this;
+
+    if (
+      !this.disabled
+        && !isUndefined(numberOfVerticalGuides)
+        && isNumber(numberOfVerticalGuides)
+    ) {
+      options.numberOfVerticalGuides = Math.max(0, numberOfVerticalGuides);
+
+      if (this.ready) {
+        this.initCropBox();
+
+        if (this.cropped) {
+          this.renderCropBox();
+        }
+      }
+    }
+
+    return this;
+  },
+
+  /**
    * Change the drag mode.
    * @param {string} mode - The new drag mode.
    * @returns {Cropper} this
