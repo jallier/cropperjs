@@ -5,7 +5,7 @@
  * Copyright 2015-present Chen Fengyuan
  * Released under the MIT license
  *
- * Date: 2021-06-12T08:00:17.411Z
+ * Date: 2021-09-29T03:22:30.144Z
  */
 
 (function (global, factory) {
@@ -226,6 +226,8 @@
     modal: true,
     // Show the dashed lines for guiding
     guides: true,
+    // The number of vertical dashed lines to show
+    numberOfVerticalGuides: 2,
     // Show the center indicator for guiding
     center: true,
     // Show the white modal to highlight the crop box
@@ -272,7 +274,7 @@
     zoom: null
   };
 
-  var TEMPLATE = '<div class="cropper-container" touch-action="none">' + '<div class="cropper-wrap-box">' + '<div class="cropper-canvas"></div>' + '</div>' + '<div class="cropper-drag-box"></div>' + '<div class="cropper-crop-box">' + '<span class="cropper-view-box"></span>' + '<span class="cropper-dashed dashed-h"></span>' + '<span class="cropper-dashed dashed-v"></span>' + '<span class="cropper-center"></span>' + '<span class="cropper-face"></span>' + '<span class="cropper-line line-e" data-cropper-action="e"></span>' + '<span class="cropper-line line-n" data-cropper-action="n"></span>' + '<span class="cropper-line line-w" data-cropper-action="w"></span>' + '<span class="cropper-line line-s" data-cropper-action="s"></span>' + '<span class="cropper-point point-e" data-cropper-action="e"></span>' + '<span class="cropper-point point-n" data-cropper-action="n"></span>' + '<span class="cropper-point point-w" data-cropper-action="w"></span>' + '<span class="cropper-point point-s" data-cropper-action="s"></span>' + '<span class="cropper-point point-ne" data-cropper-action="ne"></span>' + '<span class="cropper-point point-nw" data-cropper-action="nw"></span>' + '<span class="cropper-point point-sw" data-cropper-action="sw"></span>' + '<span class="cropper-point point-se" data-cropper-action="se"></span>' + '</div>' + '</div>';
+  var TEMPLATE = '<div class="cropper-container" touch-action="none">' + '<div class="cropper-wrap-box">' + '<div class="cropper-canvas"></div>' + '</div>' + '<div class="cropper-drag-box"></div>' + '<div class="cropper-crop-box">' + '<span class="cropper-view-box"></span>' + '<span class="cropper-dashed dashed-h"></span>' + '<span class="cropper-center"></span>' + '<span class="cropper-face"></span>' + '<span class="cropper-line line-e" data-cropper-action="e"></span>' + '<span class="cropper-line line-n" data-cropper-action="n"></span>' + '<span class="cropper-line line-w" data-cropper-action="w"></span>' + '<span class="cropper-line line-s" data-cropper-action="s"></span>' + '<span class="cropper-point point-e" data-cropper-action="e"></span>' + '<span class="cropper-point point-n" data-cropper-action="n"></span>' + '<span class="cropper-point point-w" data-cropper-action="w"></span>' + '<span class="cropper-point point-s" data-cropper-action="s"></span>' + '<span class="cropper-point point-ne" data-cropper-action="ne"></span>' + '<span class="cropper-point point-nw" data-cropper-action="nw"></span>' + '<span class="cropper-point point-sw" data-cropper-action="sw"></span>' + '<span class="cropper-point point-se" data-cropper-action="se"></span>' + '</div>' + '</div>';
 
   /**
    * Check if the given value is not a number.
@@ -1545,6 +1547,41 @@
         }
       }
     },
+    renderVerticalGuides: function renderVerticalGuides() {
+      var options = this.options,
+          container = this.container,
+          cropBox = this.cropBox,
+          face = this.face;
+      var numberOfVerticalGuides = options.numberOfVerticalGuides;
+      var verticalGuides = container.querySelectorAll(".".concat(NAMESPACE, "-dashed.dashed-v")); // Clear existing so new elements are added correctly if the number changes
+
+      verticalGuides.forEach(function (element) {
+        element.remove();
+      });
+      /*
+       * easier to think in terms of segments, but the input is in number of lines
+       * Add one to make the input match how the logic works
+       */
+
+      numberOfVerticalGuides += 1;
+
+      if (numberOfVerticalGuides >= 2) {
+        // Add a span for each line required. Set the left and width styles manually
+        // since they are dynamic
+        var totalSize = "".concat(100 / numberOfVerticalGuides, "%");
+        var previousElement = face;
+
+        for (var i = 1; i <= numberOfVerticalGuides; i += 1) {
+          var newGuide = document.createElement('span');
+          newGuide.className = "".concat(NAMESPACE, "-dashed dashed-v");
+          var size = 100 / numberOfVerticalGuides * (i - 1);
+          newGuide.style.left = "".concat(size, "%");
+          newGuide.style.width = totalSize;
+          cropBox.insertBefore(newGuide, previousElement);
+          previousElement = newGuide;
+        }
+      }
+    },
     renderCropBox: function renderCropBox() {
       var options = this.options,
           containerData = this.containerData,
@@ -1581,6 +1618,10 @@
 
       if (this.cropped && this.limited) {
         this.limitCanvas(true, true);
+      }
+
+      if (options.guides) {
+        this.renderVerticalGuides();
       }
 
       if (!this.disabled) {
@@ -3168,6 +3209,29 @@
       if (!this.disabled && !isUndefined(aspectRatio)) {
         // 0 -> NaN
         options.aspectRatio = Math.max(0, aspectRatio) || NaN;
+
+        if (this.ready) {
+          this.initCropBox();
+
+          if (this.cropped) {
+            this.renderCropBox();
+          }
+        }
+      }
+
+      return this;
+    },
+
+    /**
+     * Change the number of vertical guide lines
+     * @param {number} numberOfVerticalGuides - The new number of guides to show
+     * @returns {Cropper} this
+     */
+    setNumberOfVerticalGuides: function setNumberOfVerticalGuides(numberOfVerticalGuides) {
+      var options = this.options;
+
+      if (!this.disabled && !isUndefined(numberOfVerticalGuides) && isNumber(numberOfVerticalGuides)) {
+        options.numberOfVerticalGuides = Math.max(0, numberOfVerticalGuides);
 
         if (this.ready) {
           this.initCropBox();
